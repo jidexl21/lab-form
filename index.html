@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequencing Lab | Service Request</title>
+<style>
+  :root{
+    --ink:#17233b; --muted:#68758a; --line:#e3e8ef; --paper:#f5f7fb;
+    --blue:#3159c9; --blue-dark:#2346aa; --teal:#1b8b83; --soft:#edf2ff;
+    --green:#e9f7f2; --amber:#fff6e6; --shadow:0 12px 34px rgba(27,42,74,.08);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.45}
+  button,input,select,textarea{font:inherit}
+  button{cursor:pointer}
+  .topbar{background:#fff;border-bottom:1px solid var(--line)}
+  .top-inner{max-width:1180px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:-.02em}
+  .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#3159c9,#1b8b83);display:grid;place-items:center;color:white;font-size:20px}
+  .brand small{display:block;color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.02em}
+  .top-note{color:var(--muted);font-size:12px}
+  .wrap{max-width:1180px;margin:34px auto;padding:0 24px 56px}
+  .hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:24px}
+  .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:800;color:var(--teal);margin-bottom:8px}
+  h1{font-size:clamp(28px,4vw,38px);letter-spacing:-.04em;line-height:1.1;margin:0 0 10px}
+  .hero p{margin:0;color:var(--muted);max-width:650px}
+  .ref-chip{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 15px;white-space:nowrap;color:var(--muted);font-size:12px}
+  .ref-chip strong{display:block;color:var(--ink);font-size:14px;margin-top:3px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start}
+  .main{display:grid;gap:18px;min-width:0}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .card-head{padding:20px 22px 15px;border-bottom:1px solid #eef1f5;display:flex;align-items:flex-start;gap:12px}
+  .step{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;background:var(--soft);color:var(--blue);border-radius:9px;font-weight:800}
+  .card-head h2{margin:1px 0 4px;font-size:16px;letter-spacing:-.02em}
+  .card-head p{margin:0;color:var(--muted);font-size:12px}
+  .card-body{padding:20px 22px 22px}
+  .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field.full{grid-column:1/-1}
+  label,.field-label{font-size:12px;font-weight:700;color:#3c4960}
+  .required{color:#d34c55}
+  input,select,textarea{width:100%;border:1px solid #d9e0ea;border-radius:9px;padding:11px 12px;background:#fff;color:var(--ink);outline:none;min-width:0}
+  input:focus,select:focus,textarea:focus{border-color:#7892e4;box-shadow:0 0 0 3px rgba(49,89,201,.11)}
+  input::placeholder,textarea::placeholder{color:#a1aabb}
+  textarea{resize:vertical;min-height:76px}
+  .helper{font-size:11px;color:var(--muted)}
+  .samples-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+  .sample-count{font-size:12px;color:var(--muted)}
+  .btn{border:1px solid #d8e0ee;background:#fff;color:#33415d;border-radius:9px;padding:10px 13px;font-weight:700;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+  .btn:hover{background:#f7f9fd}
+  .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .btn-primary:hover{background:var(--blue-dark)}
+  .btn-small{padding:7px 10px;font-size:11px}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px}
+  table{border-collapse:collapse;width:100%;min-width:760px}
+  th{background:#f7f9fc;color:#657188;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 8px;border-bottom:1px solid #edf0f5;vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  td input,td select{padding:9px 8px;font-size:12px;border-radius:7px}
+  .sample-id{font-weight:800;color:#4a5d87;font-size:12px;white-space:nowrap}
+  .remove{border:0;background:transparent;color:#a2aabc;font-size:18px;padding:4px 8px;border-radius:6px}
+  .remove:hover{background:#fff0f0;color:#bf3c48}
+  .empty-note{padding:22px;text-align:center;color:var(--muted);font-size:12px}
+  .service-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .service-option{position:relative}
+  .service-option input{position:absolute;opacity:0;pointer-events:none}
+  .service-option label{display:block;border:1px solid #dce3ee;border-radius:12px;padding:15px;cursor:pointer;transition:.15s}
+  .service-option input:checked+label{border-color:var(--blue);background:#f3f6ff;box-shadow:inset 0 0 0 1px var(--blue)}
+  .service-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--ink);margin-bottom:6px}
+  .pill{font-size:10px;background:#e5f5f0;color:#177b6f;padding:4px 7px;border-radius:20px;font-weight:800}
+  .service-option p{margin:0;color:var(--muted);font-size:12px;font-weight:500}
+  .service-option .price{font-size:12px;color:#42516c;font-weight:750;margin-top:11px}
+  .consent{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:#526078}
+  .consent input{width:16px;height:16px;margin:1px 0 0;flex:0 0 auto}
+  .aside{position:sticky;top:18px;display:grid;gap:16px}
+  .summary{padding:20px}
+  .summary h3{margin:0 0 4px;font-size:16px}
+  .summary .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .summary-line{display:flex;justify-content:space-between;gap:12px;margin:12px 0;font-size:12px;color:#617087}
+  .summary-line strong{color:var(--ink);font-weight:750;text-align:right}
+  .summary-total{border-top:1px solid var(--line);padding-top:14px;margin-top:15px;display:flex;justify-content:space-between;align-items:baseline}
+  .summary-total span{font-size:12px;color:var(--muted)}
+  .summary-total strong{font-size:20px;letter-spacing:-.03em}
+  .estimate-note{background:#f3f7fb;border-radius:9px;padding:11px 12px;font-size:11px;color:#66748a;margin-top:14px}
+  .submit-btn{width:100%;margin-top:15px;padding:13px}
+  .secure{font-size:10px;color:#8994a7;text-align:center;margin-top:10px}
+  .info-card{padding:17px 18px}
+  .info-card h3{font-size:13px;margin:0 0 10px}
+  .info-row{display:flex;gap:9px;margin:10px 0;color:#657188;font-size:11px}
+  .info-icon{width:22px;height:22px;border-radius:7px;background:#eef2fb;color:var(--blue);display:grid;place-items:center;flex:0 0 auto;font-weight:800}
+  .footnote{color:#8490a2;font-size:11px;text-align:center;margin-top:24px}
+  .toast{position:fixed;right:20px;bottom:20px;background:#173b35;color:#fff;padding:14px 18px;border-radius:12px;box-shadow:0 10px 30px #102d2933;max-width:380px;display:none;z-index:20;font-size:13px}
+  .toast.show{display:block;animation:slide .2s ease-out}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(13,24,46,.45);display:none;place-items:center;padding:20px;z-index:30}
+  .modal-backdrop.show{display:grid}
+  .modal{background:#fff;border-radius:16px;padding:26px;max-width:480px;width:100%;box-shadow:0 24px 70px #0d183044}
+  .modal-mark{width:44px;height:44px;border-radius:50%;background:#e7f7f0;color:#16816c;display:grid;place-items:center;font-size:24px;margin-bottom:15px}
+  .modal h2{margin:0 0 8px;font-size:22px}
+  .modal p{color:var(--muted);font-size:13px}
+  .request-code{background:#f5f7fb;border:1px dashed #cdd6e5;padding:12px;border-radius:9px;font-weight:800;letter-spacing:.04em;margin:15px 0}
+  @keyframes slide{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}.aside{position:static;grid-template-columns:1fr 1fr}.summary{grid-row:span 2}}
+  @media(max-width:620px){.top-inner{padding:13px 16px}.top-note{display:none}.wrap{padding:0 14px 36px;margin:24px auto}.hero{display:block}.ref-chip{display:inline-block;margin-top:18px}.card-head{padding:17px}.card-body{padding:17px}.fields{grid-template-columns:1fr}.service-options{grid-template-columns:1fr}.aside{grid-template-columns:1fr}.summary{grid-row:auto}.samples-toolbar{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="top-inner">
+    <div class="brand"><div class="logo">⌬</div><div>GENESEQUENCE <small>LABORATORY SERVICES</small></div></div>
+    <div class="top-note">Client service request portal · Secure submission</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Laboratory service request</div>
+      <h1>Sequencing request form</h1>
+      <p>Submit your PCR products for sequencing. Add one or more samples, choose your turnaround time, and review your request before sending it to the laboratory.</p>
+    </div>
+    <div class="ref-chip">Request status<strong>New submission</strong></div>
+  </div>
+
+  <form id="requestForm" novalidate>
+    <div class="layout">
+      <div class="main">
+        <section class="card">
+          <div class="card-head"><div class="step">01</div><div><h2>Client information</h2><p>Who should the laboratory contact about this request?</p></div></div>
+          <div class="card-body">
+            <div class="fields">
+              <div class="field"><label for="clientName">Full name <span class="required">*</span></label><input id="clientName" name="clientName" placeholder="e.g. Dr. Ada Okafor" required></div>
+              <div class="field"><label for="email">Email address <span class="required">*</span></label><input id="email" name="email" type="email" placeholder="name@institution.edu" required></div>
+              <div class="field"><label for="phone">Phone number <span class="required">*</span></label><input id="phone" name="phone" type="tel" placeholder="+234 ..." required></div>
+              <div class="field"><label for="institution">Institution / organization <span class="required">*</span></label><input id="institution" name="institution" placeholder="University, company, or laboratory" required></div>
+              <div class="field"><label for="department">Department / laboratory</label><input id="department" name="department" placeholder="Optional"></div>
+              <div class="field"><label for="project">Project title or reference</label><input id="project" name="project" placeholder="Optional"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><div class="step">02</div><div><h2>Sample details</h2><p>Enter the information for each PCR product. Use one row per sample.</p></div></div>
+          <div class="card-body">
+            <div class="samples-toolbar">
+              <div class="sample-count"><strong id="sampleCount">1 sample</strong> in this request</div>
+              <button class="btn" type="button" id="addSample">＋ Add sample</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Sample ID *</th><th>Specimen origin *</th><th>Organism *</th><th>Product type</th><th>Amplicon size *</th><th aria-label="Remove"></th></tr></thead>
+                <tbody id="sampleRows"></tbody>
+              </table>
+            </div>
+            <div class="helper" style="margin-top:10px">Size ranges are in base pairs (bp). Confirm the sample IDs match the labels on your submitted tubes.</div>
+            <div class="field full" style="margin-top:17px"><label for="sampleNotes">Additional sample notes</label><textarea id="sampleNotes" placeholder="Optional: sample handling notes or information the laboratory should know. Do not include patient-identifying or unnecessary sensitive information."></textarea></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><div class="step">03</div><div><h2>Sequencing service</h2><p>Select your preferred processing speed.</p></div></div>
+          <div class="card-body">
+            <div class="service-options">
+              <div class="service-option">
+                <input type="radio" name="turnaround" id="standard" value="standard" checked>
+                <label for="standard">
+                  <div class="service-title">Standard <span class="pill">14 days</span></div>
+                  <p>Standard laboratory turnaround.</p>
+                  <div class="price" id="standardPrice">Price: to be confirmed</div>
+                </label>
+              </div>
+              <div class="service-option">
+                <input type="radio" name="turnaround" id="fast" value="fast">
+                <label for="fast">
+                  <div class="service-title">Fast <span class="pill">7 days</span></div>
+                  <p>Expedited processing, subject to availability.</p>
+                  <div class="price" id="fastPrice">Price: to be confirmed</div>
+                </label>
+              </div>
+            </div>
+            <p class="helper" style="margin:12px 0 0">Turnaround begins after the laboratory receives and accepts the samples. The laboratory will confirm the schedule.</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><div class="step">04</div><div><h2>Review and submit</h2><p>Check the summary, then send your request to the laboratory.</p></div></div>
+          <div class="card-body">
+            <label class="consent"><input type="checkbox" id="confirmAccuracy" required><span>I confirm that the information provided is accurate and that I am authorized to submit these samples. I understand that this form is a service request and does not confirm laboratory acceptance or a final price.</span></label>
+            <div class="helper" style="margin:12px 0 0">This mockup demonstrates the client workflow. Submission is simulated in this browser; no information is sent to a laboratory.</div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="aside">
+        <section class="card summary">
+          <h3>Request summary</h3>
+          <div class="sub">Review your selections</div>
+          <div class="summary-line"><span>Samples</span><strong id="sumSamples">1</strong></div>
+          <div class="summary-line"><span>Product type</span><strong>PCR product</strong></div>
+          <div class="summary-line"><span>Turnaround</span><strong id="sumTurnaround">Standard · 14 days</strong></div>
+          <div class="summary-line"><span>Price</span><strong id="sumPrice">To be confirmed</strong></div>
+          <div class="summary-total"><span>Estimated total</span><strong id="sumTotal">TBC</strong></div>
+          <div class="estimate-note">Pricing has not yet been configured. The laboratory will confirm the applicable charges before processing.</div>
+          <button class="btn btn-primary submit-btn" type="submit">Submit service request <span>→</span></button>
+          <div class="secure">⌑ Your information is handled by the laboratory</div>
+        </section>
+        <section class="card info-card">
+          <h3>Before you submit</h3>
+          <div class="info-row"><div class="info-icon">1</div><div>Enter a unique sample ID for every tube or specimen.</div></div>
+          <div class="info-row"><div class="info-icon">2</div><div>Choose the specimen's origin and organism category separately.</div></div>
+          <div class="info-row"><div class="info-icon">3</div><div>Coordinate physical sample delivery with the laboratory.</div></div>
+        </section>
+      </aside>
+    </div>
+  </form>
+  <div class="footnote">Laboratory service request portal · Prototype interface</div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-mark">✓</div>
+    <h2 id="modalTitle">Request prepared</h2>
+    <p>Your mock request has passed the form checks. In a live deployment, this step would send the request to the laboratory and trigger a confirmation email.</p>
+    <div class="request-code" id="requestCode">REQ-DEMO-0001</div>
+    <button class="btn btn-primary" id="closeModal" type="button" style="width:100%">Back to form</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const rows = document.getElementById('sampleRows');
+  const count = document.getElementById('sampleCount');
+  const sumSamples = document.getElementById('sumSamples');
+  const sumTurnaround = document.getElementById('sumTurnaround');
+  const sumPrice = document.getElementById('sumPrice');
+  const sumTotal = document.getElementById('sumTotal');
+  const toast = document.getElementById('toast');
+  let nextId = 2;
+
+  const options = (items, selected='') => items.map(item =>
+    `<option value="${item}" ${item===selected?'selected':''}>${item}</option>`).join('');
+
+  function addSample(id) {
+    const tr = document.createElement('tr');
+    tr.dataset.sample = id;
+    tr.innerHTML = `
+      <td><input aria-label="Sample ID" name="sampleId" value="S${String(id).padStart(3,'0')}" required></td>
+      <td><select aria-label="Specimen origin" name="origin" required>${options(['','Human','Animal','Plant'])}</select></td>
+      <td><select aria-label="Organism category" name="organism" required>${options(['','Bacteria','Fungi','Virus'])}</select></td>
+      <td><select aria-label="Product type" name="product" disabled>${options(['PCR product'],'PCR product')}</select></td>
+      <td><select aria-label="Amplicon size" name="size" required>${options(['','Under 500 bp','501–1,000 bp','1,001–3,000 bp'])}</select></td>
+      <td><button class="remove" type="button" aria-label="Remove sample ${id}" title="Remove sample">×</button></td>`;
+    tr.querySelector('.remove').addEventListener('click', () => {
+      if (rows.children.length === 1) {
+        showToast('At least one sample row is required.');
+        return;
+      }
+      tr.remove();
+      refresh();
+    });
+    rows.appendChild(tr);
+    refresh();
+  }
+
+  function refresh() {
+    const n = rows.querySelectorAll('tr').length;
+    count.textContent = `${n} sample${n===1?'':'s'}`;
+    sumSamples.textContent = n;
+    const fast = document.getElementById('fast').checked;
+    sumTurnaround.textContent = fast ? 'Fast · 7 days' : 'Standard · 14 days';
+    sumPrice.textContent = 'To be confirmed';
+    sumTotal.textContent = 'TBC';
+  }
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    window.setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  document.getElementById('addSample').addEventListener('click', () => {
+    addSample(nextId++);
+    showToast('Sample row added.');
+  });
+  document.querySelectorAll('input[name="turnaround"]').forEach(el => el.addEventListener('change', refresh));
+
+  document.getElementById('requestForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const ids = [...rows.querySelectorAll('input[name="sampleId"]')].map(el => el.value.trim().toLowerCase());
+    if (ids.some(id => !id)) {
+      showToast('Please enter an ID for every sample.');
+      return;
+    }
+    if (new Set(ids).size !== ids.length) {
+      showToast('Sample IDs must be unique within this request.');
+      return;
+    }
+    const ref = 'REQ-DEMO-' + Math.random().toString(36).slice(2,8).toUpperCase();
+    document.getElementById('requestCode').textContent = ref;
+    document.getElementById('modalBackdrop').classList.add('show');
+  });
+  document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('modalBackdrop').classList.remove('show');
+  });
+  document.getElementById('modalBackdrop').addEventListener('click', event => {
+    if (event.target.id === 'modalBackdrop') event.currentTarget.classList.remove('show');
+  });
+
+  addSample(1);
+})();
+</script>
+</body>
+</html>
