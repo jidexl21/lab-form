@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequencing Lab | Operations Dashboard</title>
+<style>
+:root{--ink:#17233b;--muted:#718096;--line:#e3e8ef;--paper:#f5f7fb;--blue:#3159c9;--blue2:#2346aa;--teal:#168b80;--green:#e8f7f0;--amber:#fff5df;--red:#fff0f0;--shadow:0 8px 28px rgba(25,43,77,.06);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-size:13px}button,input,select{font:inherit}button{cursor:pointer}
+.shell{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:100vh}
+.sidebar{background:#17233b;color:#c6cfdf;padding:22px 14px;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px;color:#fff;font-weight:800;letter-spacing:.02em}.logo{width:35px;height:35px;border-radius:11px;background:linear-gradient(135deg,#5479e4,#1b9d91);display:grid;place-items:center;font-size:20px;color:#fff}.brand small{display:block;color:#91a0bb;font-size:9px;letter-spacing:.13em;margin-top:2px}
+.nav-label{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:#7889a6;padding:0 12px;margin-bottom:7px;font-weight:800}.nav{display:grid;gap:4px}.nav button{border:0;background:transparent;color:#b9c5d9;padding:11px 12px;border-radius:9px;text-align:left;display:flex;align-items:center;gap:11px;font-size:12px}.nav button.active{background:#2c3c5b;color:#fff;font-weight:750}.nav button:hover{background:#253550}.nav-icon{width:17px;text-align:center;font-size:15px}.nav-badge{margin-left:auto;background:#dbe5ff;color:#3159c9;border-radius:20px;padding:2px 7px;font-size:10px;font-weight:800}.sidebar-bottom{margin-top:auto;border-top:1px solid #2a3853;padding:16px 8px 0;display:flex;gap:10px;align-items:center}.avatar{width:34px;height:34px;background:#e5eaff;color:#3554b5;border-radius:50%;display:grid;place-items:center;font-weight:800}.user-name{font-size:12px;color:#fff;font-weight:700}.user-role{font-size:10px;color:#8fa0bb;margin-top:2px}
+.main{min-width:0}.topbar{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;gap:18px}.crumb{color:var(--muted);font-size:12px}.crumb strong{color:var(--ink)}.top-actions{display:flex;align-items:center;gap:10px}.search{position:relative}.search input{width:240px;padding:10px 12px 10px 34px;border:1px solid var(--line);border-radius:9px;background:#fbfcfe}.search span{position:absolute;left:11px;top:9px;color:#8a96aa}.icon-btn{border:1px solid var(--line);background:#fff;border-radius:9px;width:37px;height:37px;color:#64718a;font-size:16px}
+.content{max-width:1450px;margin:0 auto;padding:28px 30px 48px}.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:22px}.eyebrow{color:var(--teal);font-size:10px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px}h1{font-size:28px;letter-spacing:-.04em;margin:0 0 6px}.page-head p{margin:0;color:var(--muted);font-size:12px}.head-buttons{display:flex;gap:9px}.btn{border:1px solid #d8e0ee;background:#fff;color:#34415b;border-radius:9px;padding:10px 13px;font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn:hover{background:#f7f9fd}.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue2)}.btn-sm{padding:7px 10px;font-size:10px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat{background:#fff;border:1px solid var(--line);border-radius:13px;padding:17px 18px;box-shadow:var(--shadow)}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.stat-icon{width:30px;height:30px;border-radius:9px;background:#edf2ff;color:var(--blue);display:grid;place-items:center;font-size:15px}.stat strong{display:block;font-size:27px;letter-spacing:-.04em;margin:10px 0 4px}.stat small{font-size:10px;color:#8490a2}.stat small.up{color:#168b70}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #edf0f5}.panel-head h2{font-size:15px;margin:0 0 4px;letter-spacing:-.02em}.panel-head p{margin:0;color:var(--muted);font-size:11px}.filters{display:flex;gap:8px;align-items:center}.filters select,.filters input{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff;color:#53617a;font-size:11px;max-width:180px}
+.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th{text-align:left;padding:12px 18px;background:#fafbfd;border-bottom:1px solid var(--line);font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:#8792a5;white-space:nowrap}td{padding:14px 18px;border-bottom:1px solid #edf0f5;color:#526078;font-size:11px;vertical-align:middle}tr:last-child td{border-bottom:0}tbody tr{cursor:pointer}tbody tr:hover{background:#fafcff}.req{font-weight:800;color:#3159c9;display:block;font-size:11px}.client{font-weight:750;color:#26334b;font-size:12px}.sub{display:block;color:#929daf;font-size:10px;margin-top:3px}.status{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:5px 9px;font-size:10px;font-weight:800;white-space:nowrap}.status:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}.s-submitted{background:#edf2ff;color:#4263bf}.s-awaiting{background:#fff4dc;color:#a57416}.s-received{background:#eaf3ff;color:#3571b8}.s-progress{background:#f0eaff;color:#7954b7}.s-completed{background:#e6f6ef;color:#218468}.s-cancelled{background:#fff0f0;color:#ba5960}.type-pill{font-size:10px;background:#f2f4f8;color:#657188;padding:4px 7px;border-radius:6px}.row-actions{display:flex;gap:5px}.dots{border:0;background:transparent;color:#7c879a;font-size:17px;padding:3px 7px}.table-foot{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-top:1px solid #edf0f5;color:#8a95a8;font-size:10px}.pagination{display:flex;gap:5px}.pagination button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 9px;color:#5b6880;font-size:10px}.pagination button.active{background:#edf2ff;border-color:#cbd7ff;color:#3159c9}
+.lower{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.8fr);gap:18px;margin-top:18px}.activity{padding:18px 20px}.activity h2{font-size:14px;margin:0 0 15px}.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #eff2f6}.activity-item:last-child{border-bottom:0}.activity-mark{width:29px;height:29px;border-radius:9px;background:#edf2ff;color:var(--blue);display:grid;place-items:center;flex:0 0 auto}.activity-text{font-size:11px;color:#53617a;line-height:1.5}.activity-text strong{color:#26334b}.activity-time{font-size:10px;color:#a0a9b8;margin-top:3px}.quick{padding:18px 20px}.quick h2{font-size:14px;margin:0 0 12px}.quick-action{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:9px;padding:12px;margin-top:8px;text-align:left;background:#fff;width:100%;color:#43516b;font-size:11px;font-weight:700}.quick-action:hover{background:#f8faff;border-color:#cbd6f3}.quick-action span{margin-left:auto;color:#8995a8;font-size:16px}
+.overlay{position:fixed;inset:0;background:#101b30aa;display:none;justify-content:flex-end;z-index:40}.overlay.open{display:flex}.drawer{background:#fff;width:min(620px,100%);height:100%;overflow:auto;box-shadow:-15px 0 50px #07132922}.drawer-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:20px 24px;display:flex;justify-content:space-between;gap:15px;align-items:flex-start;z-index:2}.drawer-head h2{font-size:20px;margin:0 0 5px;letter-spacing:-.03em}.drawer-head p{margin:0;color:var(--muted);font-size:11px}.close{border:1px solid var(--line);background:#fff;border-radius:8px;width:34px;height:34px;font-size:18px;color:#66738a}.drawer-body{padding:22px 24px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.detail{border:1px solid var(--line);border-radius:10px;padding:12px}.detail label{display:block;color:#8994a7;text-transform:uppercase;letter-spacing:.07em;font-size:9px;font-weight:800;margin-bottom:6px}.detail strong{font-size:12px;color:#2d3a53}.drawer-section{margin-top:22px}.drawer-section h3{font-size:13px;margin:0 0 12px}.sample-card{border:1px solid var(--line);border-radius:10px;margin-bottom:9px;overflow:hidden}.sample-card-head{padding:11px 13px;background:#f8fafd;display:flex;justify-content:space-between;align-items:center}.sample-card-head strong{font-size:12px}.sample-card-body{padding:12px 13px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.mini-field label{display:block;color:#8a95a8;font-size:9px;margin-bottom:4px}.mini-field strong{font-size:11px;color:#394761}.drawer-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.drawer-controls label{display:block;font-size:10px;color:#6d7a90;font-weight:750;margin-bottom:6px}.drawer-controls select,.drawer-controls input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff}.drawer-actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.toast{position:fixed;right:20px;bottom:20px;background:#173b35;color:#fff;padding:13px 17px;border-radius:10px;box-shadow:0 10px 30px #102d2933;display:none;z-index:60;font-size:12px}.toast.show{display:block}
+@media(max-width:1050px){.shell{grid-template-columns:205px minmax(0,1fr)}.content{padding:24px 20px}.topbar{padding:0 20px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.lower{grid-template-columns:1fr}}
+@media(max-width:760px){.shell{grid-template-columns:1fr}.sidebar{padding:12px;gap:12px}.brand{padding:0 5px}.sidebar .nav-label,.sidebar-bottom{display:none}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;padding:9px 11px}.topbar{height:58px;padding:0 14px}.search input{width:min(43vw,220px)}.content{padding:22px 13px}.page-head{align-items:flex-start;flex-direction:column}.head-buttons{width:100%}.head-buttons .btn{flex:1}.stats{gap:9px}.stat{padding:13px}.stat strong{font-size:23px}.panel-head{align-items:flex-start;flex-direction:column}.filters{width:100%;flex-wrap:wrap}.filters input{flex:1;min-width:140px}.filters select{flex:1}.detail-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:440px){.stats{grid-template-columns:1fr 1fr}.stat-top{font-size:10px}.stat-icon{width:26px;height:26px}.drawer-body{padding:16px}.drawer-head{padding:16px}.detail-grid,.drawer-controls{grid-template-columns:1fr}.search{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">⌬</div><div>GENESEQUENCE<small>LAB OPERATIONS</small></div></div>
+    <div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav">
+        <button class="active" data-view="dashboard"><span class="nav-icon">▦</span>Overview</button>
+        <button data-view="requests"><span class="nav-icon">▤</span>Service requests <span class="nav-badge" id="navCount">8</span></button>
+        <button data-view="samples"><span class="nav-icon">◫</span>Sample register</button>
+        <button data-view="reports"><span class="nav-icon">▥</span>Reports & exports</button>
+      </nav>
+    </div>
+    <div>
+      <div class="nav-label">Administration</div>
+      <nav class="nav">
+        <button data-view="pricing"><span class="nav-icon">₦</span>Service pricing</button>
+        <button data-view="settings"><span class="nav-icon">⚙</span>Settings</button>
+      </nav>
+    </div>
+    <div class="sidebar-bottom"><div class="avatar">LA</div><div><div class="user-name">Lab Administrator</div><div class="user-role">Operations team</div></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">Workspace <span style="padding:0 7px;color:#c0c7d2">/</span> <strong id="crumbTitle">Overview</strong></div>
+      <div class="top-actions">
+        <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Search requests or clients…"></div>
+        <button class="icon-btn" id="notifyBtn" aria-label="Notifications">♧</button>
+      </div>
+    </header>
+    <div class="content">
+      <div class="page-head">
+        <div><div class="eyebrow">Laboratory operations</div><h1 id="pageTitle">Good morning, team</h1><p id="pageSubtitle">Here’s the current status of your sequencing service requests.</p></div>
+        <div class="head-buttons"><button class="btn" id="exportBtn">↓ Export CSV</button><button class="btn btn-primary" id="newRequestBtn">＋ Add request</button></div>
+      </div>
+      <section class="stats" aria-label="Request metrics">
+        <div class="stat"><div class="stat-top">Total requests <span class="stat-icon">▤</span></div><strong id="metricTotal">128</strong><small class="up">↑ 12% <span style="color:#8a95a8">vs. last month</span></small></div>
+        <div class="stat"><div class="stat-top">Awaiting samples <span class="stat-icon" style="background:#fff5df;color:#b07b19">◷</span></div><strong id="metricAwaiting">12</strong><small>Client delivery pending</small></div>
+        <div class="stat"><div class="stat-top">In progress <span class="stat-icon" style="background:#f1eaff;color:#7a56b7">⟳</span></div><strong id="metricProgress">24</strong><small>Currently being processed</small></div>
+        <div class="stat"><div class="stat-top">Completed this month <span class="stat-icon" style="background:#e7f7f0;color:#18866d">✓</span></div><strong id="metricCompleted">46</strong><small class="up">On-time delivery: 94%</small></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div><h2>Recent service requests</h2><p>Review client submissions and manage laboratory processing.</p></div>
+          <div class="filters">
+            <input id="tableSearch" placeholder="Search ID, client, institution…">
+            <select id="statusFilter" aria-label="Filter by status"><option value="">All statuses</option><option>Submitted</option><option>Awaiting samples</option><option>Received</option><option>In progress</option><option>Completed</option><option>Cancelled</option></select>
+            <select id="speedFilter" aria-label="Filter by turnaround"><option value="">All turnaround</option><option>Standard</option><option>Fast</option></select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Request / client</th><th>Institution</th><th>Samples</th><th>Turnaround</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+            <tbody id="requestTable"></tbody>
+          </table>
+        </div>
+        <div class="table-foot"><span id="tableCount">Showing 8 requests</span><div class="pagination"><button aria-label="Previous page">‹</button><button class="active">1</button><button>2</button><button>3</button><button aria-label="Next page">›</button></div></div>
+      </section>
+
+      <div class="lower">
+        <section class="panel activity">
+          <h2>Recent activity</h2>
+          <div class="activity-item"><div class="activity-mark">＋</div><div><div class="activity-text"><strong>New request received</strong> — REQ-2026-0148 from Dr. Ada Okafor.</div><div class="activity-time">12 minutes ago · Client portal</div></div></div>
+          <div class="activity-item"><div class="activity-mark" style="background:#e8f7f0;color:#16866e">✓</div><div><div class="activity-text"><strong>Request marked completed</strong> — REQ-2026-0142 is ready for client notification.</div><div class="activity-time">1 hour ago · Lab operations</div></div></div>
+          <div class="activity-item"><div class="activity-mark" style="background:#fff5df;color:#a57416">◷</div><div><div class="activity-text"><strong>Sample delivery reminder</strong> — REQ-2026-0139 is awaiting sample receipt.</div><div class="activity-time">Yesterday · Lab operations</div></div></div>
+        </section>
+        <section class="panel quick">
+          <h2>Quick actions</h2>
+          <button class="quick-action" id="quickExport">Export request register <span>→</span></button>
+          <button class="quick-action" id="quickPricing">Review service pricing <span>→</span></button>
+          <button class="quick-action" id="quickSettings">Manage request settings <span>→</span></button>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="drawerOverlay">
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="drawer-head">
+      <div><div class="eyebrow" style="margin-bottom:5px">Request details</div><h2 id="drawerTitle">REQ-2026-0148</h2><p id="drawerSub">Submitted by client</p></div>
+      <button class="close" id="closeDrawer" aria-label="Close">×</button>
+    </div>
+    <div class="drawer-body">
+      <div class="detail-grid" id="clientDetails"></div>
+      <div class="drawer-section"><h3>Submitted samples <span id="drawerSampleCount" style="color:#8a95a8;font-weight:500"></span></h3><div id="drawerSamples"></div></div>
+      <div class="drawer-section">
+        <h3>Processing & administration</h3>
+        <div class="drawer-controls">
+          <div><label for="editStatus">Request status</label><select id="editStatus"><option>Submitted</option><option>Awaiting samples</option><option>Received</option><option>In progress</option><option>Completed</option><option>Cancelled</option></select></div>
+          <div><label for="labOwner">Assigned staff</label><select id="labOwner"><option>Unassigned</option><option>Dr. A. Bello</option><option>Chika Nwosu</option><option>Lab Operations</option></select></div>
+          <div><label for="receivedDate">Sample received date</label><input type="date" id="receivedDate"></div>
+          <div><label for="internalRef">Internal lab reference</label><input id="internalRef" placeholder="e.g. LAB-2026-021"></div>
+          <div style="grid-column:1/-1"><label for="labNotes">Internal notes</label><input id="labNotes" placeholder="Add an internal note…"></div>
+        </div>
+        <div class="drawer-actions"><button class="btn" id="emailClient">✉ Prepare client update</button><button class="btn btn-primary" id="saveRequest">Save changes</button></div>
+      </div>
+    </div>
+  </aside>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const statuses = ['Submitted','Awaiting samples','Received','In progress','Completed','Cancelled'];
+  const requests = [
+    {id:'REQ-2026-0148',name:'Dr. Ada Okafor',email:'ada.okafor@example.edu',phone:'+234 803 000 0123',institution:'University of Lagos',department:'Molecular Biology',project:'Viral diversity study',samples:4,speed:'Standard',days:14,date:'31 Oct 2026',status:'Submitted',owner:'Unassigned',received:'',internalRef:'',notes:'',sampleRows:[['S001','Human','Virus','PCR product','501–1,000 bp'],['S002','Human','Virus','PCR product','Under 500 bp'],['S003','Animal','Virus','PCR product','1,001–3,000 bp'],['S004','Human','Bacteria','PCR product','501–1,000 bp']]},
+    {id:'REQ-2026-0147',name:'Dr. Tunde Akin',email:'t.akin@example.org',phone:'+234 802 555 0182',institution:'Nigerian Institute of Medical Research',department:'Virology',project:'Surveillance panel',samples:12,speed:'Fast',days:7,date:'30 Oct 2026',status:'Awaiting samples',owner:'Chika Nwosu',received:'',internalRef:'',notes:'',sampleRows:[['VIR-01','Human','Virus','PCR product','501–1,000 bp'],['VIR-02','Human','Virus','PCR product','501–1,000 bp'],['VIR-03','Human','Virus','PCR product','Under 500 bp']]},
+    {id:'REQ-2026-0146',name:'Prof. Bisi Adeyemi',email:'b.adeyemi@example.edu',phone:'+234 809 100 0211',institution:'University of Ibadan',department:'Plant Science',project:'Plant pathogen identification',samples:6,speed:'Standard',days:14,date:'30 Oct 2026',status:'Received',owner:'Dr. A. Bello',received:'2026-10-30',internalRef:'LAB-2026-044',notes:'',sampleRows:[['PL-01','Plant','Fungi','PCR product','1,001–3,000 bp'],['PL-02','Plant','Fungi','PCR product','501–1,000 bp']]},
+    {id:'REQ-2026-0145',name:'Chinwe Eze',email:'chinwe.eze@example.com',phone:'+234 805 600 1130',institution:'BioTrack Research Ltd.',department:'Research',project:'Bacterial isolate sequencing',samples:8,speed:'Fast',days:7,date:'29 Oct 2026',status:'In progress',owner:'Lab Operations',received:'2026-10-29',internalRef:'LAB-2026-043',notes:'Library prep underway',sampleRows:[['BT-01','Animal','Bacteria','PCR product','501–1,000 bp'],['BT-02','Animal','Bacteria','PCR product','501–1,000 bp']]},
+    {id:'REQ-2026-0144',name:'Dr. Sola James',email:'s.james@example.edu',phone:'+234 801 444 1022',institution:'Federal University of Technology, Akure',department:'Biotechnology',project:'Fungal diversity',samples:3,speed:'Standard',days:14,date:'28 Oct 2026',status:'In progress',owner:'Dr. A. Bello',received:'2026-10-28',internalRef:'LAB-2026-042',notes:'',sampleRows:[['F-11','Plant','Fungi','PCR product','Under 500 bp']]},
+    {id:'REQ-2026-0143',name:'Mariam Yusuf',email:'m.yusuf@example.org',phone:'+234 807 222 0921',institution:'Lagos State University',department:'Microbiology',project:'Environmental isolates',samples:5,speed:'Standard',days:14,date:'27 Oct 2026',status:'Awaiting samples',owner:'Unassigned',received:'',internalRef:'',notes:'Client contacted 29 Oct',sampleRows:[['ENV-1','Plant','Bacteria','PCR product','501–1,000 bp']]},
+    {id:'REQ-2026-0142',name:'Dr. Kola Nnadi',email:'k.nnadi@example.edu',phone:'+234 803 333 4432',institution:'Redeemer’s University',department:'Medical Laboratory Science',project:'Amplicon sequencing',samples:10,speed:'Fast',days:7,date:'26 Oct 2026',status:'Completed',owner:'Chika Nwosu',received:'2026-10-26',internalRef:'LAB-2026-040',notes:'Results released',sampleRows:[['AMP-01','Human','Virus','PCR product','501–1,000 bp']]},
+    {id:'REQ-2026-0141',name:'Ifeoma Nwankwo',email:'i.nwankwo@example.com',phone:'+234 806 444 1122',institution:'Private Research Lab',department:'Genomics',project:'Pilot sequencing request',samples:2,speed:'Standard',days:14,date:'24 Oct 2026',status:'Cancelled',owner:'Unassigned',received:'',internalRef:'',notes:'Cancelled by client',sampleRows:[['P-01','Human','Virus','PCR product','Under 500 bp']]}
+  ];
+  const $ = id => document.getElementById(id);
+  let selected = null;
+  const statusClass = s => ({'Submitted':'s-submitted','Awaiting samples':'s-awaiting','Received':'s-received','In progress':'s-progress','Completed':'s-completed','Cancelled':'s-cancelled'}[s]||'s-submitted');
+  const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').style.display='none',2800)}
+  function render(){
+    const q=($('tableSearch').value||$('globalSearch').value).toLowerCase().trim(), status=$('statusFilter').value, speed=$('speedFilter').value;
+    const list=requests.filter(r=>(!q||[r.id,r.name,r.institution,r.project].join(' ').toLowerCase().includes(q))&&(!status||r.status===status)&&(!speed||r.speed===speed));
+    $('requestTable').innerHTML=list.map(r=>`<tr data-id="${esc(r.id)}" tabindex="0" aria-label="Open ${esc(r.id)}">
+      <td><span class="req">${esc(r.id)}</span><span class="sub">${esc(r.project||'No project title')}</span></td>
+      <td><span class="client">${esc(r.name)}</span><span class="sub">${esc(r.institution)}</span></td>
+      <td><strong style="color:#33415a">${r.samples}</strong><span class="sub">samples</span></td>
+      <td><span class="type-pill">${esc(r.speed)}</span><span class="sub">${r.days} days</span></td>
+      <td>${esc(r.date)}</td><td><span class="status ${statusClass(r.status)}">${esc(r.status)}</span></td>
+      <td><button class="dots" type="button" aria-label="Open request">⋯</button></td></tr>`).join('');
+    $('tableCount').textContent=`Showing ${list.length} of ${requests.length} requests`;
+    $('navCount').textContent=requests.filter(r=>r.status==='Submitted').length;
+    $('metricTotal').textContent=128+Math.max(0,requests.length-8);
+    $('metricAwaiting').textContent=requests.filter(r=>r.status==='Awaiting samples').length+10;
+    $('metricProgress').textContent=requests.filter(r=>r.status==='In progress').length+22;
+    $('metricCompleted').textContent=requests.filter(r=>r.status==='Completed').length+44;
+    $('requestTable').querySelectorAll('tr').forEach(tr=>{
+      tr.addEventListener('click',e=>{if(e.target.closest('button')||e.currentTarget)openRequest(tr.dataset.id)});
+      tr.addEventListener('keydown',e=>{if(e.key==='Enter')openRequest(tr.dataset.id)});
+    });
+  }
+  function openRequest(id){
+    selected=requests.find(r=>r.id===id);if(!selected)return;
+    const r=selected;
+    $('drawerTitle').textContent=r.id;$('drawerSub').textContent=`Submitted ${r.date} · ${r.samples} samples`;
+    $('clientDetails').innerHTML=[
+      ['Client name',r.name],['Email address',r.email],['Phone number',r.phone],['Institution',r.institution],['Department',r.department||'—'],['Project',r.project||'—'],['Requested service',`PCR product sequencing · ${r.speed}`],['Turnaround',`${r.days} days`]
+    ].map(([a,b])=>`<div class="detail"><label>${esc(a)}</label><strong>${esc(b)}</strong></div>`).join('');
+    $('drawerSampleCount').textContent=`(${r.sampleRows.length} shown)`;
+    $('drawerSamples').innerHTML=r.sampleRows.map(s=>`<div class="sample-card"><div class="sample-card-head"><strong>${esc(s[0])}</strong><span class="type-pill">${esc(s[3])}</span></div><div class="sample-card-body"><div class="mini-field"><label>Specimen origin</label><strong>${esc(s[1])}</strong></div><div class="mini-field"><label>Organism</label><strong>${esc(s[2])}</strong></div><div class="mini-field"><label>Amplicon size</label><strong>${esc(s[4])}</strong></div></div></div>`).join('');
+    $('editStatus').value=r.status;$('labOwner').value=r.owner;$('receivedDate').value=r.received;$('internalRef').value=r.internalRef;$('labNotes').value=r.notes;
+    $('drawerOverlay').classList.add('open');
+  }
+  function closeDrawer(){$('drawerOverlay').classList.remove('open');selected=null}
+  $('requestTable').addEventListener('click',e=>{const row=e.target.closest('tr[data-id]');if(row)openRequest(row.dataset.id)});
+  ['tableSearch','globalSearch','statusFilter','speedFilter'].forEach(id=>$(id).addEventListener('input',render));
+  $('closeDrawer').addEventListener('click',closeDrawer);
+  $('drawerOverlay').addEventListener('click',e=>{if(e.target===$('drawerOverlay'))closeDrawer()});
+  $('saveRequest').addEventListener('click',()=>{
+    if(!selected)return;
+    selected.status=$('editStatus').value;selected.owner=$('labOwner').value;selected.received=$('receivedDate').value;selected.internalRef=$('internalRef').value;selected.notes=$('labNotes').value;
+    render();closeDrawer();toast('Request changes saved in this demo.');
+  });
+  $('emailClient').addEventListener('click',()=>{
+    if(!selected)return;
+    const subject=encodeURIComponent(`Update on sequencing request ${selected.id}`);
+    const body=encodeURIComponent(`Hello ${selected.name},\n\nWe are writing with an update on your sequencing request ${selected.id}.\n\nCurrent status: ${$('editStatus').value}\n\nRegards,\nLaboratory Operations`);
+    window.location.href=`mailto:${encodeURIComponent(selected.email)}?subject=${subject}&body=${body}`;
+  });
+  function exportCsv(){
+    const headers=['Request ID','Client','Email','Phone','Institution','Department','Project','Samples','Turnaround','Days','Submitted','Status','Assigned staff','Received date','Internal reference','Internal notes'];
+    const lines=[headers,...requests.map(r=>[r.id,r.name,r.email,r.phone,r.institution,r.department,r.project,r.samples,r.speed,r.days,r.date,r.status,r.owner,r.received,r.internalRef,r.notes])];
+    const csv=lines.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='sequencing-request-register-demo.csv';a.click();URL.revokeObjectURL(url);toast('CSV export generated from demo data.');
+  }
+  $('exportBtn').addEventListener('click',exportCsv);$('quickExport').addEventListener('click',exportCsv);
+  $('newRequestBtn').addEventListener('click',()=>toast('New requests are submitted through the client request form.'));
+  $('notifyBtn').addEventListener('click',()=>toast('You’re all caught up on demo notifications.'));
+  const viewNames={dashboard:['Overview','Good morning, team','Here’s the current status of your sequencing service requests.'],requests:['Service requests','Service requests','Review submissions, update status, and coordinate sample processing.'],samples:['Sample register','Sample register','Browse samples associated with client service requests.'],reports:['Reports & exports','Reports & exports','Export request information for reporting and laboratory coordination.'],pricing:['Service pricing','Service pricing','Pricing is pending confirmation from the laboratory.'],settings:['Settings','Request settings','Manage request workflow and administrative preferences.']};
+  document.querySelectorAll('.nav button').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+    const v=viewNames[btn.dataset.view];$('crumbTitle').textContent=v[0];$('pageTitle').textContent=v[1];$('pageSubtitle').textContent=v[2];
+    if(btn.dataset.view==='pricing')toast('Demo pricing: rates are not configured yet.');
+    if(btn.dataset.view==='settings')toast('Settings panel is represented in this prototype.');
+    if(btn.dataset.view==='samples')toast('Sample register is represented through each request’s sample details.');
+    if(btn.dataset.view==='reports')toast('Use Export CSV to download the demo request register.');
+    if(btn.dataset.view==='requests')$('tableSearch').focus();
+  }));
+  $('quickPricing').addEventListener('click',()=>{document.querySelector('[data-view="pricing"]').click()});
+  $('quickSettings').addEventListener('click',()=>{document.querySelector('[data-view="settings"]').click()});
+  render();
+})();
+</script>
+</body>
+</html>
