@@ -100,6 +100,25 @@
   .modal h2{margin:0 0 8px;font-size:22px}
   .modal p{color:var(--muted);font-size:13px}
   .request-code{background:#f5f7fb;border:1px dashed #cdd6e5;padding:12px;border-radius:9px;font-weight:800;letter-spacing:.04em;margin:15px 0}
+  .choice-group{display:flex;gap:8px;flex-wrap:wrap}
+  .choice{position:relative}
+  .choice input{position:absolute;opacity:0;pointer-events:none}
+  .choice label{display:inline-flex;align-items:center;gap:6px;border:1px solid #d9e0ea;border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;color:#3c4960;cursor:pointer;background:#fff;transition:.15s}
+  .choice input:checked+label{border-color:var(--blue);background:#f3f6ff;color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+  .choice input:focus-visible+label{box-shadow:0 0 0 3px rgba(49,89,201,.18)}
+  .upload{border:1.5px dashed #c9d3e3;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;background:#fafbfe;cursor:pointer;transition:.15s}
+  .upload:hover,.upload.drag{border-color:var(--blue);background:#f3f6ff}
+  .upload input{display:none}
+  label.upload{font-weight:500}
+  .upload-icon{width:40px;height:40px;border-radius:10px;background:var(--soft);color:var(--blue);display:grid;place-items:center;font-size:18px;flex:0 0 auto}
+  .upload-text{font-size:12px;color:var(--muted)}
+  .upload-text strong{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+  .gel-preview{display:none;margin-top:10px;align-items:center;gap:12px}
+  .gel-preview.show{display:flex}
+  .gel-preview img{width:84px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#111}
+  .gel-preview .name{font-size:12px;font-weight:700;word-break:break-all}
+  .lab-fixed{background:#f7f9fc;border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-weight:700;color:var(--ink)}
+  .sub-head{font-size:12px;font-weight:800;color:#3c4960;margin:20px 0 10px;padding-top:18px;border-top:1px solid #eef1f5}
   @keyframes slide{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
   @media(max-width:900px){.layout{grid-template-columns:1fr}.aside{position:static;grid-template-columns:1fr 1fr}.summary{grid-row:span 2}}
   @media(max-width:620px){.top-inner{padding:13px 16px}.top-note{display:none}.wrap{padding:0 14px 36px;margin:24px auto}.hero{display:block}.ref-chip{display:inline-block;margin-top:18px}.card-head{padding:17px}.card-body{padding:17px}.fields{grid-template-columns:1fr}.service-options{grid-template-columns:1fr}.aside{grid-template-columns:1fr}.summary{grid-row:auto}.samples-toolbar{align-items:flex-start;flex-direction:column}}
@@ -108,7 +127,7 @@
 <body>
 <header class="topbar">
   <div class="top-inner">
-    <div class="brand"><div class="logo">⌬</div><div>GENESEQUENCE <small>LABORATORY SERVICES</small></div></div>
+    <div class="brand"><div class="logo">⌬</div><div>DEPARTMENT OF VIROLOGY <small>UNIVERSITY OF IBADAN · SEQUENCING LABORATORY</small></div></div>
     <div class="top-note">Client service request portal · Secure submission</div>
   </div>
 </header>
@@ -130,7 +149,8 @@
           <div class="card-head"><div class="step">01</div><div><h2>Client information</h2><p>Who should the laboratory contact about this request?</p></div></div>
           <div class="card-body">
             <div class="fields">
-              <div class="field"><label for="clientName">Full name <span class="required">*</span></label><input id="clientName" name="clientName" placeholder="e.g. Dr. Ada Okafor" required></div>
+              <div class="field full"><span class="field-label">Sequencing laboratory</span><div class="lab-fixed">Department of Virology, University of Ibadan</div><input type="hidden" name="laboratory" value="Department of Virology, University of Ibadan"></div>
+              <div class="field"><label for="clientName">Name <span class="required">*</span></label><input id="clientName" name="clientName" placeholder="e.g. Dr. Ada Okafor" required></div>
               <div class="field"><label for="email">Email address <span class="required">*</span></label><input id="email" name="email" type="email" placeholder="name@institution.edu" required></div>
               <div class="field"><label for="phone">Phone number <span class="required">*</span></label><input id="phone" name="phone" type="tel" placeholder="+234 ..." required></div>
               <div class="field"><label for="institution">Institution / organization <span class="required">*</span></label><input id="institution" name="institution" placeholder="University, company, or laboratory" required></div>
@@ -155,12 +175,40 @@
             </div>
             <div class="helper" style="margin-top:10px">Size ranges are in base pairs (bp). Confirm the sample IDs match the labels on your submitted tubes.</div>
             <div class="field full" style="margin-top:17px"><label for="sampleNotes">Additional sample notes</label><textarea id="sampleNotes" placeholder="Optional: sample handling notes or information the laboratory should know. Do not include patient-identifying or unnecessary sensitive information."></textarea></div>
+            <div class="sub-head">Gel image &amp; purification</div>
+            <div class="fields">
+              <div class="field full">
+                <span class="field-label">Upload your gel image <span class="required">*</span></span>
+                <label class="upload" id="gelDrop" for="gelImage">
+                  <input type="file" id="gelImage" name="gelImage" accept="image/*" required>
+                  <div class="upload-icon">⇪</div>
+                  <div class="upload-text"><strong>Click to upload or drag your gel image here</strong>JPG, PNG or TIFF · max 10 MB. Label lanes with the sample IDs above.</div>
+                </label>
+                <div class="gel-preview" id="gelPreview"><img id="gelThumb" alt="Gel image preview"><div><div class="name" id="gelName"></div><button class="btn btn-small" type="button" id="gelRemove" style="margin-top:6px">Remove</button></div></div>
+              </div>
+              <div class="field full">
+                <span class="field-label">Request for gel purification <span class="required">*</span></span>
+                <div class="choice-group" role="radiogroup" aria-label="Request for gel purification">
+                  <div class="choice"><input type="radio" name="gelPurification" id="gelPurYes" value="Yes" required><label for="gelPurYes">Yes</label></div>
+                  <div class="choice"><input type="radio" name="gelPurification" id="gelPurNo" value="No"><label for="gelPurNo">No</label></div>
+                </div>
+                <div class="helper">Choose Yes if your PCR product needs to be gel-purified by the laboratory before sequencing.</div>
+              </div>
+            </div>
           </div>
         </section>
 
         <section class="card">
-          <div class="card-head"><div class="step">03</div><div><h2>Sequencing service</h2><p>Select your preferred processing speed.</p></div></div>
+          <div class="card-head"><div class="step">03</div><div><h2>Sequencing service</h2><p>Select the type of sequencing, processing speed and any additional analysis.</p></div></div>
           <div class="card-body">
+            <div class="field" style="margin-bottom:18px">
+              <span class="field-label">Type of sequencing <span class="required">*</span></span>
+              <div class="choice-group" role="radiogroup" aria-label="Type of sequencing">
+                <div class="choice"><input type="radio" name="seqType" id="seqSanger" value="Sanger method" required><label for="seqSanger">Sanger method</label></div>
+                <div class="choice"><input type="radio" name="seqType" id="seqNgs" value="NGS"><label for="seqNgs">NGS (Next-generation sequencing)</label></div>
+              </div>
+            </div>
+            <span class="field-label" style="display:block;margin-bottom:8px">Processing speed <span class="required">*</span></span>
             <div class="service-options">
               <div class="service-option">
                 <input type="radio" name="turnaround" id="standard" value="standard" checked>
@@ -180,6 +228,14 @@
               </div>
             </div>
             <p class="helper" style="margin:12px 0 0">Turnaround begins after the laboratory receives and accepts the samples. The laboratory will confirm the schedule.</p>
+            <div class="field" style="margin-top:18px;padding-top:18px;border-top:1px solid #eef1f5">
+              <span class="field-label">Request for bioinformatics analysis <span class="required">*</span></span>
+              <div class="choice-group" role="radiogroup" aria-label="Request for bioinformatics analysis">
+                <div class="choice"><input type="radio" name="bioinformatics" id="bioYes" value="Yes" required><label for="bioYes">Yes</label></div>
+                <div class="choice"><input type="radio" name="bioinformatics" id="bioNo" value="No"><label for="bioNo">No</label></div>
+              </div>
+              <div class="helper">e.g. sequence assembly, BLAST identification, phylogenetic analysis. Charges may apply.</div>
+            </div>
           </div>
         </section>
 
@@ -198,7 +254,11 @@
           <div class="sub">Review your selections</div>
           <div class="summary-line"><span>Samples</span><strong id="sumSamples">1</strong></div>
           <div class="summary-line"><span>Product type</span><strong>PCR product</strong></div>
+          <div class="summary-line"><span>Sequencing type</span><strong id="sumSeqType">Not selected</strong></div>
           <div class="summary-line"><span>Turnaround</span><strong id="sumTurnaround">Standard · 14 days</strong></div>
+          <div class="summary-line"><span>Gel image</span><strong id="sumGel">Not uploaded</strong></div>
+          <div class="summary-line"><span>Gel purification</span><strong id="sumGelPur">—</strong></div>
+          <div class="summary-line"><span>Bioinformatics</span><strong id="sumBio">—</strong></div>
           <div class="summary-line"><span>Price</span><strong id="sumPrice">To be confirmed</strong></div>
           <div class="summary-total"><span>Estimated total</span><strong id="sumTotal">TBC</strong></div>
           <div class="estimate-note">Pricing has not yet been configured. The laboratory will confirm the applicable charges before processing.</div>
@@ -209,7 +269,8 @@
           <h3>Before you submit</h3>
           <div class="info-row"><div class="info-icon">1</div><div>Enter a unique sample ID for every tube or specimen.</div></div>
           <div class="info-row"><div class="info-icon">2</div><div>Choose the specimen's origin and organism category separately.</div></div>
-          <div class="info-row"><div class="info-icon">3</div><div>Coordinate physical sample delivery with the laboratory.</div></div>
+          <div class="info-row"><div class="info-icon">3</div><div>Upload a clear gel image showing your PCR bands.</div></div>
+          <div class="info-row"><div class="info-icon">4</div><div>Coordinate physical sample delivery with the laboratory.</div></div>
         </section>
       </aside>
     </div>
@@ -270,6 +331,12 @@
     sumSamples.textContent = n;
     const fast = document.getElementById('fast').checked;
     sumTurnaround.textContent = fast ? 'Fast · 7 days' : 'Standard · 14 days';
+    const pick = name => (document.querySelector(`input[name="${name}"]:checked`)||{}).value;
+    document.getElementById('sumSeqType').textContent = pick('seqType') || 'Not selected';
+    document.getElementById('sumGelPur').textContent = pick('gelPurification') || '—';
+    document.getElementById('sumBio').textContent = pick('bioinformatics') || '—';
+    const gf = document.getElementById('gelImage').files[0];
+    document.getElementById('sumGel').textContent = gf ? 'Uploaded' : 'Not uploaded';
     sumPrice.textContent = 'To be confirmed';
     sumTotal.textContent = 'TBC';
   }
@@ -284,11 +351,37 @@
     addSample(nextId++);
     showToast('Sample row added.');
   });
-  document.querySelectorAll('input[name="turnaround"]').forEach(el => el.addEventListener('change', refresh));
+  document.querySelectorAll('input[name="turnaround"],input[name="seqType"],input[name="gelPurification"],input[name="bioinformatics"]').forEach(el => el.addEventListener('change', refresh));
+
+  const gelInput = document.getElementById('gelImage');
+  const gelDrop = document.getElementById('gelDrop');
+  const gelPreview = document.getElementById('gelPreview');
+  function showGel() {
+    const f = gelInput.files[0];
+    if (f && !f.type.startsWith('image/')) { showToast('Please upload an image file.'); gelInput.value=''; }
+    else if (f && f.size > 10*1024*1024) { showToast('Gel image must be 10 MB or smaller.'); gelInput.value=''; }
+    const file = gelInput.files[0];
+    if (file) {
+      document.getElementById('gelThumb').src = URL.createObjectURL(file);
+      document.getElementById('gelName').textContent = file.name;
+      gelPreview.classList.add('show');
+    } else gelPreview.classList.remove('show');
+    refresh();
+  }
+  gelInput.addEventListener('change', showGel);
+  ['dragenter','dragover'].forEach(t => gelDrop.addEventListener(t, e => { e.preventDefault(); gelDrop.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(t => gelDrop.addEventListener(t, e => { e.preventDefault(); gelDrop.classList.remove('drag'); }));
+  gelDrop.addEventListener('drop', e => { if (e.dataTransfer.files.length) { gelInput.files = e.dataTransfer.files; showGel(); } });
+  document.getElementById('gelRemove').addEventListener('click', () => { gelInput.value=''; showGel(); });
 
   document.getElementById('requestForm').addEventListener('submit', event => {
     event.preventDefault();
     const form = event.currentTarget;
+    if (!gelInput.files.length) {
+      showToast('Please upload your gel image.');
+      gelDrop.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
